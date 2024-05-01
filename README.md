@@ -28,22 +28,29 @@ interface IUserProfile {
 
 type GetUserReturn = IUserProfile | null;
 
+const getUserById = async (): Promise<IUserProfile> => {
+  const { error, data } = await supabaseClient
+    .from('users')
+    .select('*')
+    .eq('id', userId)
+    .limit(1);
+
+  if (error?.message || !data) {
+    return null;
+  }
+
+  return data[0];
+};
+
 const verifyUserHandler = async (userId: string) => {
+  ////////////////////////////////////////////////
+  /////////       Use getOrRefresh        ////////
+  ////////////////////////////////////////////////
   const user = await getOrRefresh<GetUserReturn>({
     parseResult: true,
     key: `user:${userId}`,
     cacheRefreshHandler: async (): Promise<GetUserReturn> => {
-      const { error, data } = await supabaseClient
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .limit(1);
-
-      if (error?.message || !data) {
-        return null;
-      }
-
-      return data[0];
+      return await getUserById(userId);
     },
   });
 
