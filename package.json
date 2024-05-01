@@ -1,0 +1,28 @@
+{
+  "name": "lib-cache",
+  "version": "0.2405.02",
+  "description": "Lib-cache provides helper functions to easily manage your database cache.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "eslint ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.1.1",
+    "@types/node": "^20.12.7",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.1.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.8.0"
+  },
+  "dependencies": {
+    "ioredis": "^5.4.1"
+  }
+}

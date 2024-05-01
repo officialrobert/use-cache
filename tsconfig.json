@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "node16",
+    "lib": ["ES2022"],
+    "moduleResolution": "node16",
+    "allowJs": true,
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    "importHelpers": true,
+    "alwaysStrict": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "strictNullChecks": false,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "types": [],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "./src"
+  },
+  "include": ["src/**/*.ts", "index.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}
