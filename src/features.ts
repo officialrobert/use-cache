@@ -4,13 +4,20 @@ import {
   IAppInitParams,
   IGetOrRefreshParams,
   IGetOrRefreshReturnValue,
+  IGetPaginatedListByPageParams,
   ISetParams,
 } from './types';
 
+/**
+ * Get latest cache data or force refresh before returning the value
+ * @param params
+ * @returns
+ */
 export const getOrRefresh = async <T>(
   params: IGetOrRefreshParams<T>
 ): IGetOrRefreshReturnValue<T> => {
-  const { forceRefresh, parseResult, key, expiry, cacheRefreshHandler } = params;
+  const { forceRefresh, parseResult, key, expiry, cacheRefreshHandler } =
+    params;
   const redis = store.redis;
   const res = await redis.get(key);
 
@@ -48,7 +55,12 @@ export const getOrRefresh = async <T>(
   return res as T;
 };
 
-export const set = async (params: ISetParams): Promise<string | 'OK'> => {
+/**
+ * Set redis cache
+ * @param params
+ * @returns
+ */
+export const set = async <T>(params: ISetParams<T>): Promise<string | 'OK'> => {
   try {
     const { key, value, expiry } = params;
     const redis = store.redis;
@@ -69,6 +81,25 @@ export const set = async (params: ISetParams): Promise<string | 'OK'> => {
   }
 };
 
-export const init = (params: IAppInitParams) => {
+/**
+ * Required initial function to run from the start of your app
+ * @param params
+ */
+export const init = (params: IAppInitParams): void => {
   store.redis = params.redis;
 };
+
+export const getPaginatedListByPage = async <T>(
+  params: IGetPaginatedListByPageParams
+): Promise<T[]> => {
+  return [];
+};
+
+export const insertFromPaginatedList = async <T>(
+  key: string,
+  data: T
+): Promise<string | 'OK'> => {
+  return 'OK';
+};
+
+export const removeItemFromPaginatedList = (key: string, itemId: string) => {};

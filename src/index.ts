@@ -1,1 +1,2 @@
-export { getOrRefresh, init } from './features';
+export { getOrRefresh, init, set } from './features';
+export * from './types/index';

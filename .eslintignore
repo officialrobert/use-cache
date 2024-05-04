@@ -4,3 +4,4 @@ build/
 tests/
 js-tests/
 webpack.config.js
+eslint.config.mjs

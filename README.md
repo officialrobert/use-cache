@@ -1,6 +1,6 @@
 # lib-cache
 
-`Lib-cache` provides helper functions to easily manage and scale your db cache.
+`Lib-cache` provides helper functions to easily manage and scale your redis and SQL caching strategies.
 
 ## Initialize
 
@@ -58,4 +58,19 @@ const verifyUserHandler = async (userId: string) => {
     // valid user
   }
 };
+```
+
+## Setter function
+
+How to manually store cache using the `set` function.
+
+```ts
+import { set } from 'lib-cache';
+
+const user = await getUserById(userId);
+const res = await set({ key: `user:${userId}`, value: user });
+
+if (res === 'OK') {
+  // success
+}
 ```

@@ -10,9 +10,9 @@ export interface IGetOrRefreshParams<T> {
 
 export type IGetOrRefreshReturnValue<T> = Promise<T | undefined>;
 
-export interface ISetParams {
+export interface ISetParams<T> {
   key: string;
-  value: string | number | Buffer | Object | Record;
+  value: string | number | Buffer | Object | Record | T;
   expiry?: number;
 }
 
@@ -23,4 +23,10 @@ export interface IAppInitParams {
 
 export interface IAppStoreRef {
   redis: Redis | null;
+}
+
+export interface IGetPaginatedListByPageParams {
+  key: string;
+  page: number;
+  sizePerPage: number;
 }
