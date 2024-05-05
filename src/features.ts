@@ -192,16 +192,16 @@ export const removeItemFromPaginatedList = async (
   key: string,
   id: string
 ): Promise<string | 'OK'> => {
-  const redis = store.redis;
-  if (id) {
-    const response = await redis.zrem(key, id);
-
-    if (response > 0) {
-      return 'OK';
-    }
-
-    return 'Error';
+  if (!id) {
+    throw new LibCacheError('Invalid id.');
   }
 
-  throw new LibCacheError('Invalid id.');
+  const redis = store.redis;
+  const response = await redis.zrem(key, id);
+
+  if (response > 0) {
+    return 'OK';
+  }
+
+  return 'Error';
 };
