@@ -95,7 +95,7 @@ const handleInsertItem = async (id: string) => {
   await insertToPaginatedList({
     id,
     key: 'myPaginatedList',
-    // The 'score' field is optional, if not provided it uses `Date.now()` value
+    // The 'score' field is optional; if not provided, it uses the Date.now() value.
     score: Date.now(),
   });
 };
