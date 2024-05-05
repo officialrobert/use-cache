@@ -2,6 +2,7 @@ import { LibCacheError } from './errors';
 import { store } from './store';
 import {
   IAppInitParams,
+  IGetOrRefreshDataInPaginatedListParams,
   IGetOrRefreshParams,
   IGetOrRefreshReturnValue,
   IGetPaginatedListByPageParams,
@@ -18,14 +19,8 @@ import {
 export const getOrRefresh = async <T>(
   params: IGetOrRefreshParams<T>
 ): IGetOrRefreshReturnValue<T> => {
-  const {
-    forceRefresh,
-    parseResult,
-    key,
-    expiry,
-    updateScoreInPaginatedList,
-    cacheRefreshHandler,
-  } = params;
+  const { forceRefresh, parseResult, key, expiry, cacheRefreshHandler } =
+    params;
   const redis = store.redis;
   const res = await redis.get(key);
 
@@ -49,12 +44,6 @@ export const getOrRefresh = async <T>(
       hasExpiryProvided ? expiry : undefined
     );
 
-    if (val && val['id'] && updateScoreInPaginatedList) {
-      // @todo
-      // update score in the list for LRU algorithm
-      // so you can evict least recently used data
-    }
-
     return val;
   }
 
@@ -67,6 +56,32 @@ export const getOrRefresh = async <T>(
   }
 
   return res as T;
+};
+
+export const getOrRefreshDataInPaginatedList = async <T>(
+  params: IGetOrRefreshDataInPaginatedListParams<T>
+): IGetOrRefreshReturnValue<T> => {
+  const { updateScoreInPaginatedList, id, score, listKey } = params;
+  const val = await getOrRefresh(params);
+  const scoreToUse = typeof score !== 'number' ? Date.now() : score;
+
+  if (score < 0) {
+    throw new LibCacheError(
+      'getOrRefreshDataInPaginatedList(): Invalid score.'
+    );
+  }
+
+  if (typeof val !== 'undefined' && !!val && id && updateScoreInPaginatedList) {
+    // update score in the list for LRU algorithm
+    // so you can evict least recently used data
+    await updateItemScoreFromPaginatedList({
+      key: listKey,
+      id,
+      score: scoreToUse,
+    });
+  }
+
+  return val;
 };
 
 /**

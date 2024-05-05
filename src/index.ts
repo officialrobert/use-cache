@@ -1,5 +1,6 @@
 export {
   getOrRefresh,
+  getOrRefreshDataInPaginatedList,
   init,
   set,
   getPaginatedListTotalItems,
