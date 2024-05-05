@@ -77,19 +77,26 @@ if (res === 'OK') {
 
 ## Strategies for paginated list
 
-We have these functions below to help you manage sorted and paginated list for your apps.
+This library uses `Redis Sorted Sets` to implement a paginated list. We store only the unique ID from your data, which is by default sorted by the date added or modified in ascending order. We use the LRU method to evict items from the paginated list.
+
+You can configure the maximum number of items in the paginated list. When this limit is reached, it kicks out the least recently used data, determined by score.
 
 ```ts
-export function insertToPaginatedList(
-  params: IInsertPaginatedListItemParams
-): Promise<string | 'OK'>;
+// 200 items limit by default
+init({ redis: redis, maxPaginatedItems: 200 });
+```
 
-export function getPaginatedListByPage(
-  params: IGetPaginatedListByPageParams
-): Promise<string[]>;
+> > Inserting data
 
-export function removeItemFromPaginatedList(
-  key: string,
-  id: string
-): Promise<string | 'OK'>;
+```ts
+import { insertToPaginatedList } from 'lib-cache';
+
+const handleInsertItem = async (id: string) => {
+  await insertToPaginatedList({
+    id,
+    key: 'myPaginatedList',
+    // The 'score' field is optional, if not provided it uses `Date.now()` value
+    score: Date.now(),
+  });
+};
 ```

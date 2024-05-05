@@ -75,8 +75,8 @@ export const getOrRefreshDataInPaginatedList = async <T>(
     // update score in the list for LRU algorithm
     // so you can evict least recently used data
     await updateItemScoreFromPaginatedList({
-      key: listKey,
       id,
+      key: listKey,
       score: scoreToUse,
     });
   }

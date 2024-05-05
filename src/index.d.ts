@@ -1,5 +1,6 @@
 import {
   IAppInitParams,
+  IGetOrRefreshDataInPaginatedListParams,
   IGetOrRefreshParams,
   IGetOrRefreshReturnValue,
   IGetPaginatedListByPageParams,
@@ -13,6 +14,10 @@ declare module 'lib-cache' {
 
   export function getOrRefresh<T>(
     params: IGetOrRefreshParams<T>
+  ): IGetOrRefreshReturnValue<T>;
+
+  export function getOrRefreshDataInPaginatedList<T>(
+    params: IGetOrRefreshDataInPaginatedListParams<T>
   ): IGetOrRefreshReturnValue<T>;
 
   export function set<T>(params: ISetParams<T>): Promise<string | 'OK'>;
