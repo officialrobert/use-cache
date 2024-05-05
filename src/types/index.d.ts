@@ -18,15 +18,23 @@ export interface ISetParams<T> {
 
 export interface IAppInitParams {
   redis: Redis;
+  maxPaginatedItems: number;
   verbose?: boolean;
 }
 
 export interface IAppStoreRef {
   redis: Redis | null;
+  maxPaginatedItems: number;
 }
 
 export interface IGetPaginatedListByPageParams {
   key: string;
   page: number;
   sizePerPage: number;
+}
+
+export interface IInsertPaginatedListItemParams {
+  key: string;
+  id: string;
+  score: number;
 }

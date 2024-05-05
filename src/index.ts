@@ -1,2 +1,7 @@
-export { getOrRefresh, init, set } from './features';
+export {
+  getOrRefresh,
+  init,
+  set,
+  getPaginatedListTotalItems,
+} from './features';
 export * from './types/index';

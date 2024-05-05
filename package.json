@@ -1,7 +1,7 @@
 {
   "name": "lib-cache",
   "version": "0.2405.02",
-  "description": "Lib-cache provides helper functions to easily manage and scale your redis and SQL caching strategies.",
+  "description": "Lib-cache provides helper functions to easily manage and scale your redis and database caching strategies.",
   "main": "index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",

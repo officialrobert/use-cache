@@ -5,6 +5,7 @@ import {
   IGetOrRefreshParams,
   IGetOrRefreshReturnValue,
   IGetPaginatedListByPageParams,
+  IInsertPaginatedListItemParams,
   ISetParams,
 } from './types';
 
@@ -56,7 +57,8 @@ export const getOrRefresh = async <T>(
 };
 
 /**
- * Set redis cache
+ * Set redis cache.
+ * Object data will be sanitzed with JSON.stringify()
  * @param params
  * @returns
  */
@@ -87,19 +89,119 @@ export const set = async <T>(params: ISetParams<T>): Promise<string | 'OK'> => {
  */
 export const init = (params: IAppInitParams): void => {
   store.redis = params.redis;
+  store.maxPaginatedItems = params.maxPaginatedItems;
+
+  if (!params?.redis) {
+    throw new LibCacheError('Redis instance is missing.');
+  }
 };
 
-export const getPaginatedListByPage = async <T>(
+/**
+ * Get paginated list by page.
+ * Always in ascending order.
+ * @param params
+ * @returns
+ */
+export const getPaginatedListByPage = async (
   params: IGetPaginatedListByPageParams
-): Promise<T[]> => {
-  return [];
+): Promise<string[]> => {
+  const { page, sizePerPage, key } = params;
+  const start = (page - 1) * sizePerPage;
+  const end = start + (sizePerPage - 1);
+  const items: { id: string; score: number }[] = [];
+  const redis = store.redis;
+  const res = await redis.zrevrange(key, start, end, 'WITHSCORES');
+
+  if (res?.length) {
+    for (let i = 0; i < res.length; i += 2) {
+      const score = parseFloat(res[i + 1]);
+      const id = `${res[i] || ''}`;
+
+      if (id?.length > 0 && typeof score === 'number') {
+        items.push({ id, score });
+      }
+    }
+  } else {
+    return [];
+  }
+
+  return items
+    .filter((item) => !!item && item?.id?.length > 0)
+    .sort((a, b) => {
+      const scoreA = a.score ?? -Infinity;
+      const scoreB = b.score ?? -Infinity;
+
+      return scoreB - scoreA;
+    })
+    .map((item) => item?.id);
 };
 
-export const insertFromPaginatedList = async <T>(
-  key: string,
-  data: T
+/**
+ * Fetch total items in a list
+ * @param key
+ * @returns
+ */
+export const getPaginatedListTotalItems = async (
+  key: string
+): Promise<number> => {
+  const redis = store.redis;
+  const count = await redis.zcard(key);
+
+  return count;
+};
+
+/**
+ * Insert an item to the list using the item ID
+ * @param params
+ * @returns
+ */
+export const insertToPaginatedList = async (
+  params: IInsertPaginatedListItemParams
 ): Promise<string | 'OK'> => {
-  return 'OK';
+  const { score, key, id } = params;
+  const total = await getPaginatedListTotalItems(key); // get count
+  const maxPaginatedItems = store.maxPaginatedItems;
+  const redis = store.redis;
+
+  // if number of items limit reached
+  // evict least recently used data
+  if (total >= maxPaginatedItems) {
+    await redis.zpopmin(key);
+  }
+
+  if (typeof score !== 'number' || score < 0) {
+    throw new LibCacheError('Invalid score.');
+  }
+
+  const response = await redis.zadd(key, score, id);
+
+  if (response > 0) {
+    return 'OK';
+  }
+
+  return 'Error';
 };
 
-export const removeItemFromPaginatedList = (key: string, itemId: string) => {};
+/**
+ * Remove item from the list.
+ * @param key
+ * @param id
+ * @returns
+ */
+export const removeItemFromPaginatedList = async (
+  key: string,
+  id: string
+): Promise<string | 'OK'> => {
+  const redis = store.redis;
+  if (id) {
+    const response = await redis.zrem(key, id);
+
+    if (response > 0) {
+      return 'OK';
+    }
+
+    return 'Error';
+  }
+
+  throw new LibCacheError('Invalid id.');
+};

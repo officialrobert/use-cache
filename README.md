@@ -1,6 +1,6 @@
 # lib-cache
 
-`Lib-cache` provides helper functions to easily manage and scale your redis and SQL caching strategies.
+`Lib-cache` provides helper functions to easily manage and scale your redis and database caching strategies.
 
 ## Initialize
 
