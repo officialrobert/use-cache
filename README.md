@@ -86,7 +86,7 @@ You can configure the maximum number of items in the paginated list. When this l
 init({ redis: redis, maxPaginatedItems: 200 });
 ```
 
-> > Inserting data
+> Inserting data
 
 ```ts
 import { insertToPaginatedList } from 'lib-cache';
