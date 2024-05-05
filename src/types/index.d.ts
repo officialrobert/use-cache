@@ -6,6 +6,10 @@ export interface IGetOrRefreshParams<T> {
   forceRefresh?: boolean;
   parseResult?: boolean;
   cacheRefreshHandler?: () => Promise<T>;
+
+  // if item is part of paginated list
+  updateScoreInPaginatedList?: number;
+  newScore?: number;
 }
 
 export type IGetOrRefreshReturnValue<T> = Promise<T | undefined>;
@@ -34,6 +38,12 @@ export interface IGetPaginatedListByPageParams {
 }
 
 export interface IInsertPaginatedListItemParams {
+  key: string;
+  id: string;
+  score?: number;
+}
+
+export interface IUpdateItemScoreFromPaginatedList {
   key: string;
   id: string;
   score: number;

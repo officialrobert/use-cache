@@ -5,6 +5,7 @@ import {
   IGetPaginatedListByPageParams,
   IInsertPaginatedListItemParams,
   ISetParams,
+  IUpdateItemScoreFromPaginatedList,
 } from './types';
 
 declare module 'lib-cache' {
@@ -29,5 +30,9 @@ declare module 'lib-cache' {
   export function removeItemFromPaginatedList(
     key: string,
     id: string
+  ): Promise<string | 'OK'>;
+
+  export function updateItemScoreFromPaginatedList(
+    params: IUpdateItemScoreFromPaginatedList
   ): Promise<string | 'OK'>;
 }

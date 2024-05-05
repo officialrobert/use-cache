@@ -7,6 +7,7 @@ import {
   IGetPaginatedListByPageParams,
   IInsertPaginatedListItemParams,
   ISetParams,
+  IUpdateItemScoreFromPaginatedList,
 } from './types';
 
 /**
@@ -17,8 +18,14 @@ import {
 export const getOrRefresh = async <T>(
   params: IGetOrRefreshParams<T>
 ): IGetOrRefreshReturnValue<T> => {
-  const { forceRefresh, parseResult, key, expiry, cacheRefreshHandler } =
-    params;
+  const {
+    forceRefresh,
+    parseResult,
+    key,
+    expiry,
+    updateScoreInPaginatedList,
+    cacheRefreshHandler,
+  } = params;
   const redis = store.redis;
   const res = await redis.get(key);
 
@@ -41,6 +48,12 @@ export const getOrRefresh = async <T>(
       hasExpiryProvided ? 'EX' : undefined,
       hasExpiryProvided ? expiry : undefined
     );
+
+    if (val && val['id'] && updateScoreInPaginatedList) {
+      // @todo
+      // update score in the list for LRU algorithm
+      // so you can evict least recently used data
+    }
 
     return val;
   }
@@ -162,6 +175,11 @@ export const insertToPaginatedList = async (
   const total = await getPaginatedListTotalItems(key); // get count
   const maxPaginatedItems = store.maxPaginatedItems;
   const redis = store.redis;
+  const scoreToUse = typeof score !== 'number' ? Date.now() : score;
+
+  if (score < 0) {
+    throw new LibCacheError('insertToPaginatedList(): Invalid score.');
+  }
 
   // if number of items limit reached
   // evict least recently used data
@@ -169,11 +187,7 @@ export const insertToPaginatedList = async (
     await redis.zpopmin(key);
   }
 
-  if (typeof score !== 'number' || score < 0) {
-    throw new LibCacheError('Invalid score.');
-  }
-
-  const response = await redis.zadd(key, score, id);
+  const response = await redis.zadd(key, scoreToUse, id);
 
   if (response > 0) {
     return 'OK';
@@ -193,11 +207,30 @@ export const removeItemFromPaginatedList = async (
   id: string
 ): Promise<string | 'OK'> => {
   if (!id) {
-    throw new LibCacheError('Invalid id.');
+    throw new LibCacheError('removeItemFromPaginatedList(): Invalid id.');
   }
 
   const redis = store.redis;
   const response = await redis.zrem(key, id);
+
+  if (response > 0) {
+    return 'OK';
+  }
+
+  return 'Error';
+};
+
+export const updateItemScoreFromPaginatedList = async (
+  params: IUpdateItemScoreFromPaginatedList
+): Promise<string | 'OK'> => {
+  const { score, id, key } = params;
+
+  if (!id) {
+    throw new LibCacheError('updateItemScoreFromPaginatedList(): Invalid id.');
+  }
+
+  const redis = store.redis;
+  const response = await redis.zadd(key, score, id);
 
   if (response > 0) {
     return 'OK';

@@ -74,3 +74,22 @@ if (res === 'OK') {
   // success
 }
 ```
+
+## Strategies for paginated list
+
+We have these functions below to help you manage sorted and paginated list for your apps.
+
+```ts
+export function insertToPaginatedList(
+  params: IInsertPaginatedListItemParams
+): Promise<string | 'OK'>;
+
+export function getPaginatedListByPage(
+  params: IGetPaginatedListByPageParams
+): Promise<string[]>;
+
+export function removeItemFromPaginatedList(
+  key: string,
+  id: string
+): Promise<string | 'OK'>;
+```

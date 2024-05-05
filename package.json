@@ -4,7 +4,7 @@
   "description": "Lib-cache provides helper functions to easily manage and scale your redis and database caching strategies.",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "eslint . && tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "lint": "eslint ."
   },
