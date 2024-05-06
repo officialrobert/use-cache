@@ -12,6 +12,12 @@ import { redis } from 'lib';
 init({ redis: redis });
 ```
 
+> Here's how to set the maximum number of items in the paginated list before we begin data eviction.
+
+```ts
+init({ redis: redis, maxPaginatedItems: 200 });
+```
+
 ## Getter function
 
 Use `getOrRefresh` with `SupabaseDB`
@@ -105,3 +111,11 @@ const handleInsertItem = async (id: string) => {
   });
 };
 ```
+
+## Documentation
+
+See full API reference [Documentation](#documentation)
+
+## License
+
+Licensed under [MIT](./LICENSE).
