@@ -40,4 +40,8 @@ declare module 'lib-cache' {
   export function updateItemScoreFromPaginatedList(
     params: IUpdateItemScoreFromPaginatedList
   ): Promise<string | 'OK'>;
+
+  export function generateKeyFromQueryFilters(
+    filters: Record<string, any>
+  ): string;
 }

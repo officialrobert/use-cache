@@ -8,5 +8,6 @@ export {
   insertToPaginatedList,
   removeItemFromPaginatedList,
   updateItemScoreFromPaginatedList,
+  generateKeyFromQueryFilters,
 } from './features';
 export * from './types/index';

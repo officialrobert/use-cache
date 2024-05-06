@@ -261,3 +261,21 @@ export const updateItemScoreFromPaginatedList = async (
 
   return 'Error';
 };
+
+export const generateKeyFromQueryFilters = (
+  filters: Record<string, any>
+): string => {
+  if (typeof filters === 'object' && filters) {
+    let result = '';
+
+    for (const key in filters) {
+      if (Object.prototype.hasOwnProperty.call(filters, key)) {
+        result += `${key.charAt(0).toUpperCase() + key.slice(1)}`;
+      }
+    }
+
+    return result;
+  }
+
+  return '';
+};
