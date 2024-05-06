@@ -114,7 +114,7 @@ const handleInsertItem = async (id: string) => {
 
 ## Documentation
 
-See full API reference [Documentation](#documentation)
+See full API reference [Documentation](#docs)
 
 ## License
 

@@ -243,6 +243,11 @@ export const removeItemFromPaginatedList = async (
   return 'Error';
 };
 
+/**
+ * Update the score of an item in the paginated list to move it up or down in the order.
+ * @param params 
+ * @returns 
+ */
 export const updateItemScoreFromPaginatedList = async (
   params: IUpdateItemScoreFromPaginatedList
 ): Promise<string | 'OK'> => {
@@ -262,6 +267,12 @@ export const updateItemScoreFromPaginatedList = async (
   return 'Error';
 };
 
+/**
+ * Generate a string key for your cache based on the formatted filter properties of your database query.
+ * {"limit" : 1 , "team" : "team-id" } => "limitTeam"
+ * @param filters
+ * @returns
+ */
 export const generateKeyFromQueryFilters = (
   filters: Record<string, any>
 ): string => {
