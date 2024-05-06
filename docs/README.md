@@ -1,4 +1,4 @@
-<h1 align="center">Lib-cache</h1>
+<h1 align="center">use-cache</h1>
 
 ## API Reference
 

@@ -9,7 +9,7 @@ import {
   IUpdateItemScoreFromPaginatedList,
 } from './types';
 
-declare module 'lib-cache' {
+declare module 'use-cache' {
   export function init(params: IAppInitParams): void;
 
   export function getOrRefresh<T>(
