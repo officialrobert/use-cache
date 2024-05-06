@@ -1,6 +1,8 @@
 <h1 align="center">use-cache</h1>
 
-## API Reference
+### API Reference
+
+<a id="API_Reference"></a>
 
 Full reference to all supported helper functions for caching strategies.
 
