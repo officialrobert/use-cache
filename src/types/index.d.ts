@@ -11,7 +11,6 @@ export interface IGetOrRefreshParams<T> {
 export interface IGetOrRefreshDataInPaginatedListParams<T>
   extends IGetOrRefreshParams<T> {
   // if item is part of paginated list
-  id: string;
   listKey: string;
   score?: number;
   updateScoreInPaginatedList?: number;

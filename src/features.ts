@@ -58,26 +58,34 @@ export const getOrRefresh = async <T>(
   return res as T;
 };
 
+/**
+ * Get latest cache data of 'key'.
+ * Wraps the `getOrRefresh` function and enables you to update the score of an item in the list.
+ * @param params
+ * @returns {IGetOrRefreshReturnValue}
+ */
 export const getOrRefreshDataInPaginatedList = async <T>(
   params: IGetOrRefreshDataInPaginatedListParams<T>
 ): IGetOrRefreshReturnValue<T> => {
-  const { updateScoreInPaginatedList, id, score, listKey } = params;
+  const { updateScoreInPaginatedList, score, listKey } = params;
   const val = await getOrRefresh(params);
-  const scoreToUse = typeof score !== 'number' ? Date.now() : score;
+  const id = val && val['id'];
 
-  if (score < 0) {
-    throw new LibCacheError(
-      'getOrRefreshDataInPaginatedList(): Invalid score.'
-    );
-  }
-
-  if (typeof val !== 'undefined' && !!val && id && updateScoreInPaginatedList) {
+  if (
+    typeof val !== 'undefined' &&
+    !!val &&
+    typeof score === 'number' &&
+    score > 0 &&
+    typeof id === 'string' &&
+    !!id &&
+    updateScoreInPaginatedList
+  ) {
     // update score in the list for LRU algorithm
     // so you can evict least recently used data
     await updateItemScoreFromPaginatedList({
       id,
+      score,
       key: listKey,
-      score: scoreToUse,
     });
   }
 
