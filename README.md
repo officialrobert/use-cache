@@ -16,8 +16,9 @@ init({ redis: redis });
 
 Use `getOrRefresh` with `SupabaseDB`
 
+> Declare query function
+
 ```ts
-import { getOrRefresh } from 'lib-cache';
 import { supabaseClient } from 'lib';
 
 interface IUserProfile {
@@ -41,6 +42,10 @@ const getUserById = async (): Promise<IUserProfile> => {
 
   return data[0];
 };
+```
+
+```ts
+import { getOrRefresh } from 'lib-cache';
 
 const verifyUserHandler = async (userId: string) => {
   ////////////////////////////////////////////////
