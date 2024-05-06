@@ -1,6 +1,6 @@
 {
   "name": "use-cache",
-  "version": "0.2405.02",
+  "version": "0.2405.07",
   "description": "use-cache provides helper functions to easily manage and scale your redis and database caching strategies.",
   "main": "index.js",
   "scripts": {

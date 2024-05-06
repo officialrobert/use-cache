@@ -105,9 +105,13 @@ export const set = async <T>(params: ISetParams<T>): Promise<string | 'OK'> => {
     const isObject = typeof value === 'object' && !!value;
     const hasExpiryProvided = typeof expiry === 'number' && expiry > 0;
 
+    if (typeof value === 'undefined') {
+      throw new LibCacheError('set(): value should not be undefined.');
+    }
+
     const res = await redis.set(
       key,
-      isObject ? JSON.stringify(isObject) : value,
+      isObject ? JSON.stringify(isObject) : `${value}`,
       hasExpiryProvided ? 'EX' : undefined,
       hasExpiryProvided ? expiry : undefined
     );
@@ -245,8 +249,8 @@ export const removeItemFromPaginatedList = async (
 
 /**
  * Update the score of an item in the paginated list to move it up or down in the order.
- * @param params 
- * @returns 
+ * @param params
+ * @returns
  */
 export const updateItemScoreFromPaginatedList = async (
   params: IUpdateItemScoreFromPaginatedList
