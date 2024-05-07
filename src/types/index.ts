@@ -20,7 +20,7 @@ export type IGetOrRefreshReturnValue<T> = Promise<T | undefined>;
 
 export interface ISetParams<T> {
   key: string;
-  value: string | number | Buffer | Object | Record | T;
+  value: string | number | Buffer | Object | Record<string, string | T> | T;
   expiry?: number;
 }
 

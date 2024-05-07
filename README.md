@@ -114,7 +114,7 @@ const handleInsertItem = async (id: string) => {
 
 ## Documentation
 
-See full API reference [Documentation](#docs)
+See full API reference <a href="./docs/README.md"><b>Documentation</b</a>
 
 ## License
 

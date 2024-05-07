@@ -273,7 +273,7 @@ export const updateItemScoreFromPaginatedList = async (
 
 /**
  * Generate a string key for your cache based on the formatted filter properties of your database query.
- * {"limit" : 1 , "team" : "team-id" } => "limitTeam"
+ * {"limit" : 1 , "team" : "team-id" } => "limit1Teamteamid"
  * @param filters
  * @returns
  */
@@ -285,7 +285,11 @@ export const generateKeyFromQueryFilters = (
 
     for (const key in filters) {
       if (Object.prototype.hasOwnProperty.call(filters, key)) {
-        result += `${key.charAt(0).toUpperCase() + key.slice(1)}`;
+        const val = `${filters[key] || ''}`;
+
+        result += `${key.charAt(0).toUpperCase() + key.slice(1)}${
+          val ? val.charAt(0).toUpperCase() + val.slice(1) : ''
+        }`;
       }
     }
 
