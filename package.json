@@ -1,8 +1,9 @@
 {
-  "name": "@use-cache/helper",
-  "version": "0.2405.07",
+  "name": "use-cache-helper",
+  "version": "0.2405.09",
   "description": "use-cache provides helper functions to easily manage and scale your redis and database caching strategies.",
   "main": "dist/index.js",
+  "private": false,
   "scripts": {
     "build": "eslint . && tsc -p tsconfig.json",
     "start": "node dist/index.js",
@@ -18,7 +19,7 @@
     "use cache",
     "use-cache"
   ],
-  "author": "Robert Espina <officialrobert.espina9627@gmail.com>",
+  "author": "Robert Espina <robert.espina9627@gmail.com>",
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^9.1.1",

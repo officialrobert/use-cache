@@ -1,4 +1,4 @@
-<h1 align="center">use-cache</h1>
+<h1 align="center">use-cache-helper</h1>
 
 ### API Reference
 
@@ -79,7 +79,7 @@ This library uses `Redis Sorted Sets` to implement a paginated list. We store on
 > Here's how to cache a list based on your SQL query:
 
 ```ts
-import { insertToPaginatedList, generateKeyFromQueryFilters } from 'use-cache';
+import { insertToPaginatedList, generateKeyFromQueryFilters } from 'use-cache-helper';
 import { supabaseClient } from 'lib';
 import { map, filter } from 'lodash';
 

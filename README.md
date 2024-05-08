@@ -1,11 +1,11 @@
-# use-cache
+# use-cache-helper
 
-`use-cache` provides helper functions to easily manage and scale your redis and database caching strategies.
+`use-cache-helper` provides helper functions to easily manage and scale your redis and database caching strategies.
 
 ## Initialize
 
 ```ts
-import { init } from 'use-cache';
+import { init } from 'use-cache-helper';
 import { redis } from 'lib';
 
 // your ioredis instance
@@ -51,7 +51,7 @@ const getUserById = async (): Promise<IUserProfile> => {
 ```
 
 ```ts
-import { getOrRefresh } from 'use-cache';
+import { getOrRefresh } from 'use-cache-helper';
 
 const verifyUserHandler = async (userId: string) => {
   ////////////////////////////////////////////////
@@ -76,7 +76,7 @@ const verifyUserHandler = async (userId: string) => {
 How to manually store cache using the `set` function.
 
 ```ts
-import { set } from 'use-cache';
+import { set } from 'use-cache-helper';
 
 const user = await getUserById(userId);
 const res = await set({ key: `user:${userId}`, value: user });
@@ -100,7 +100,7 @@ init({ redis: redis, maxPaginatedItems: 200 });
 > Inserting data
 
 ```ts
-import { insertToPaginatedList } from 'use-cache';
+import { insertToPaginatedList } from 'use-cache-helper';
 
 const handleInsertItem = async (id: string) => {
   await insertToPaginatedList({
