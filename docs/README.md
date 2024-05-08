@@ -127,6 +127,8 @@ const storeListByPageHandler = async (page: number, sizePerPage: number) => {
 getOrRefreshDataInPaginatedList(options);
 ```
 
+### getOrRefreshDataInPaginatedList() options
+
 <a id="getOrRefreshDataInPaginatedList_options"></a>
 
 - `key <string>` - Your cache key.
@@ -135,9 +137,8 @@ getOrRefreshDataInPaginatedList(options);
 - `cacheRefreshHandler () => Promise<T> (optional)` - The function callback executes whenever the cache is refreshed.
 - `forceRefresh <boolean>` - If set to `true`, refresh the cache data using the `cacheRefreshHandler` parameter function. This function will cache the data returned by calling `cacheRefreshHandler`.
 - `parseResult <boolean> (optional)` - If true, serialize and call `JSON.parse()` to the returned data.
-
 - `score <number> (optional)` - The score affects the order of the item in the paginated list. By default, we use `Date.now()` if this value is left blank, as we sort it by date in ascending order.
-  - `updateScoreInPaginatedList <boolean> (optional)` - Determines whether to update the score of the data in the list that will affect the item's order using the `score` value passed. If you're using the LRU algorithm, most likely you want to update the order when fetching or refreshing the item's payload, causing it to move up in the order list.
+- `updateScoreInPaginatedList <boolean> (optional)` - Determines whether to update the score of the data in the list that will affect the item's order using the `score` value passed. If you're using the LRU algorithm, most likely you want to update the order when fetching or refreshing the item's payload, causing it to move up in the order list.
 
 ### getPaginatedListByPage
 
@@ -147,9 +148,9 @@ getOrRefreshDataInPaginatedList(options);
 getPaginatedListByPage(options);
 ```
 
-<a id="getPaginatedListByPage_options"></a>
-
 ### getPaginatedListByPage() options
+
+<a id="getPaginatedListByPage_options"></a>
 
 - `key <string>` - Your cache key for your paginated list.
 - `page <number>` - The target page you want to fetch.
@@ -162,6 +163,8 @@ getPaginatedListByPage(options);
 ```ts
 insertToPaginatedList(options);
 ```
+
+### insertToPaginatedList() options
 
 <a id="insertToPaginatedList_options"></a>
 
@@ -179,6 +182,8 @@ Fetch the total number of items in the list. You can use this value for paginate
 getPaginatedListTotalItems(key);
 ```
 
-### getPaginatedListTotalItems()
+### getPaginatedListTotalItems() key
+
+<a id="getPaginatedListTotalItems_key"></a>
 
 - `key <string>` - Your cache key for your paginated list.
