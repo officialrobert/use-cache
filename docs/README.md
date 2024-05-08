@@ -108,7 +108,7 @@ const storeListByPageHandler = async (page: number, sizePerPage: number) => {
       const id = item?.id;
       const score = new Date(item?.created_at).getTime();
 
-      // call this function when plan to update or add a new item to the list
+      // Call this function when you plan to update or add a new item to the list
       return insertToPaginatedList({
         id,
         score,
@@ -118,6 +118,24 @@ const storeListByPageHandler = async (page: number, sizePerPage: number) => {
   );
 };
 ```
+
+### generateKeyFromQueryFilters
+
+<a id="generateKeyFromQueryFilters"></a>
+
+Generate a string key for your cache based on the formatted filter properties of your database query.
+
+```ts
+generateKeyFromQueryFilters(filters);
+```
+
+### generateKeyFromQueryFilters()
+
+```ts
+// {"limit" : 1 , "team" : "team-id" } => "limit1Teamteamid"
+```
+
+- `filters Record<string, any>` - A key-value record containing unique filters for your database query.
 
 ### getOrRefreshDataInPaginatedList
 
@@ -168,6 +186,8 @@ insertToPaginatedList(options);
 
 <a id="insertToPaginatedList_options"></a>
 
+Take note that when we hit the limit `maxPaginatedItems`, we start evicting data beginning with the least recently used data, which has the lowest score.
+
 - `key <string>` - Your cache key for your paginated list.
 - `id <string>` - The 'id' for your data/payload.
 - `score <number> (optional)` - The score affects the order of the item in the paginated list. By default, we use `Date.now()` if this value is left blank, as we sort it by date in ascending order.
@@ -187,3 +207,38 @@ getPaginatedListTotalItems(key);
 <a id="getPaginatedListTotalItems_key"></a>
 
 - `key <string>` - Your cache key for your paginated list.
+
+### removeItemFromPaginatedList
+
+<a id="removeItemFromPaginatedList"></a>
+
+Remove a target item from the list.
+
+```ts
+removeItemFromPaginatedList(options);
+```
+
+### removeItemFromPaginatedList() options
+
+<a id="removeItemFromPaginatedList_options"></a>
+
+- `key <string>` - Your cache key for your paginated list.
+- `id <string>` - Target 'id' of the item.
+
+### updateItemScoreFromPaginatedList
+
+<a id="updateItemScoreFromPaginatedList"></a>
+
+Update item score in the list. This will affect the order of the item.
+
+```ts
+updateItemScoreFromPaginatedList(options);
+```
+
+### updateItemScoreFromPaginatedList() options
+
+<a id="updateItemScoreFromPaginatedList_options"></a>
+
+- `key <string>` - Your cache key for your paginated list.
+- `id <string>` - Target 'id' of the item.
+- `score <number>` - New score.
