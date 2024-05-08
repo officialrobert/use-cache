@@ -5,6 +5,7 @@ import {
   IGetOrRefreshReturnValue,
   IGetPaginatedListByPageParams,
   IInsertPaginatedListItemParams,
+  IRemoveItemFromPaginatedListParams,
   ISetParams,
   IUpdateItemScoreFromPaginatedList,
 } from './types';
@@ -33,8 +34,7 @@ declare module 'use-cache' {
   ): Promise<string[]>;
 
   export function removeItemFromPaginatedList(
-    key: string,
-    id: string
+    params: IRemoveItemFromPaginatedListParams
   ): Promise<string | 'OK'>;
 
   export function updateItemScoreFromPaginatedList(

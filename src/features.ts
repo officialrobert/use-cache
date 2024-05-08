@@ -7,6 +7,7 @@ import {
   IGetOrRefreshReturnValue,
   IGetPaginatedListByPageParams,
   IInsertPaginatedListItemParams,
+  IRemoveItemFromPaginatedListParams,
   ISetParams,
   IUpdateItemScoreFromPaginatedList,
 } from './types';
@@ -225,14 +226,14 @@ export const insertToPaginatedList = async (
 
 /**
  * Remove item from the list.
- * @param key
- * @param id
+ * @param params
  * @returns
  */
 export const removeItemFromPaginatedList = async (
-  key: string,
-  id: string
+  params: IRemoveItemFromPaginatedListParams
 ): Promise<string | 'OK'> => {
+  const { id, key } = params;
+
   if (!id) {
     throw new LibCacheError('removeItemFromPaginatedList(): Invalid id.');
   }

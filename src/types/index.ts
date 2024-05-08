@@ -47,6 +47,11 @@ export interface IInsertPaginatedListItemParams {
   score?: number;
 }
 
+export interface IRemoveItemFromPaginatedListParams {
+  key: string;
+  id: string;
+}
+
 export interface IUpdateItemScoreFromPaginatedList {
   key: string;
   id: string;
