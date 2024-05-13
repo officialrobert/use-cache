@@ -28,5 +28,10 @@
     "baseUrl": "./src"
   },
   "include": ["src/**/*.ts", "index.d.ts"],
-  "exclude": ["node_modules", "dist", "eslint.config.mjs", "eslint.config.js"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "eslint.config.mjs",
+    "eslint.config.js"
+  ]
 }

@@ -1,4 +1,4 @@
-import { getOrRefresh } from 'features';
+import { getOrRefresh } from '../src/features';
 
 export const start = async () => {
   interface IUserProfile {
