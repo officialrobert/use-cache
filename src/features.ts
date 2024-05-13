@@ -252,9 +252,47 @@ export const getPaginatedListTotalItems = async (
 };
 
 /**
- * Insert an item to the list using the item ID
+ * Automatically insert ID data from your array of objects.
+ * Use non-zero & non-negative scores.
+ * @param listKey
+ * @param listData
+ * @returns {string}
+ */
+export const insertRecordsToPaginatedList = async <T>(
+  listKey: string,
+  listData: T & { score: number; id: string }[]
+): Promise<string | 'OK'> => {
+  checkRedis();
+
+  if (listData?.length > 0) {
+    const invalidScores = listData.filter((d) => d.score < 1);
+
+    if (invalidScores?.length > 0) {
+      throw new UseCacheError('insertRecordsToPaginatedList() invalid score');
+    }
+
+    for (let i = 0; i < listData.length; i++) {
+      const payload = listData[i];
+      const { id, score } = payload;
+
+      await insertToPaginatedList({
+        score,
+        id,
+        key: listKey,
+      });
+    }
+
+    return 'OK';
+  }
+
+  return 'Error';
+};
+
+/**
+ * Insert an item to the list using the item ID.
+ * Use non-zero & non-negative scores.
  * @param params
- * @returns
+ * @returns {string}
  */
 export const insertToPaginatedList = async (
   params: IInsertPaginatedListItemParams
@@ -299,7 +337,7 @@ export const insertToPaginatedList = async (
 /**
  * Remove item from the list.
  * @param params
- * @returns
+ * @returns {string}
  */
 export const removeItemFromPaginatedList = async (
   params: IRemoveItemFromPaginatedListParams

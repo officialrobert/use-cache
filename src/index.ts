@@ -9,5 +9,6 @@ export {
   removeItemFromPaginatedList,
   updateItemScoreFromPaginatedList,
   generateKeyFromQueryFilters,
+  insertRecordsToPaginatedList,
 } from './features';
 export * from './types/index';
