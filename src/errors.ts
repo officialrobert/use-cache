@@ -1,11 +1,11 @@
-export class LibCacheError extends Error {
+export class UseCacheError extends Error {
   message: string;
 
   constructor(message?: string, opts?: ErrorOptions) {
-    const sanitized = `LibCacheError:${message}`;
+    const sanitized = `UseCacheError:${message}`;
 
     super(sanitized, opts);
-    this.message = `LibCacheError${message}`;
-    this.name = 'LibCacheError';
+    this.message = `UseCacheError${message}`;
+    this.name = 'UseCacheError';
   }
 }

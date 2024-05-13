@@ -1,4 +1,5 @@
 import { Redis } from 'ioredis';
+import { Redis as UpstashRedis } from '@upstash/redis';
 
 export interface IGetOrRefreshParams<T> {
   key: string;
@@ -25,14 +26,16 @@ export interface ISetParams<T> {
 }
 
 export interface IAppInitParams {
-  redis: Redis;
   maxPaginatedItems: number;
+  redis?: Redis;
+  upstashRedis?: UpstashRedis;
   verbose?: boolean;
 }
 
 export interface IAppStoreRef {
   redis: Redis | null;
   maxPaginatedItems: number;
+  upstashRedis: UpstashRedis | null;
 }
 
 export interface IGetPaginatedListByPageParams {

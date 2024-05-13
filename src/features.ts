@@ -1,4 +1,5 @@
-import { LibCacheError } from './errors';
+import { checkRedis } from './helpers';
+import { UseCacheError } from './errors';
 import { store } from './store';
 import {
   IAppInitParams,
@@ -23,10 +24,16 @@ export const getOrRefresh = async <T>(
   const { forceRefresh, parseResult, key, expiry, cacheRefreshHandler } =
     params;
   const redis = store.redis;
-  const res = await redis.get(key);
+  const upstashRedis = store.upstashRedis;
 
-  if (!redis) {
-    throw new LibCacheError('Redis instance missing');
+  checkRedis();
+
+  let res: string | null | undefined = '';
+
+  if (redis) {
+    res = await redis.get(key);
+  } else if (upstashRedis) {
+    res = await upstashRedis.get(key);
   }
 
   if (
@@ -38,12 +45,24 @@ export const getOrRefresh = async <T>(
     const hasExpiryProvided = typeof expiry === 'number' && expiry > 0;
     const sanitized = typeof val === 'object' ? JSON.stringify(val) : `${val}`;
 
-    await redis.set(
-      key,
-      sanitized,
-      hasExpiryProvided ? 'EX' : undefined,
-      hasExpiryProvided ? expiry : undefined
-    );
+    if (redis) {
+      await redis.set(
+        key,
+        sanitized,
+        hasExpiryProvided ? 'EX' : undefined,
+        hasExpiryProvided ? expiry : undefined
+      );
+    } else if (upstashRedis) {
+      await upstashRedis.set(
+        key,
+        sanitized,
+        hasExpiryProvided
+          ? {
+              ex: expiry,
+            }
+          : {}
+      );
+    }
 
     return val;
   }
@@ -52,7 +71,7 @@ export const getOrRefresh = async <T>(
     return undefined;
   }
 
-  if (parseResult) {
+  if (parseResult && res && typeof res === 'string') {
     return JSON.parse(res) as T;
   }
 
@@ -103,21 +122,40 @@ export const set = async <T>(params: ISetParams<T>): Promise<string | 'OK'> => {
   try {
     const { key, value, expiry } = params;
     const redis = store.redis;
+    const upstashRedis = store.upstashRedis;
     const isObject = typeof value === 'object' && !!value;
     const hasExpiryProvided = typeof expiry === 'number' && expiry > 0;
 
     if (typeof value === 'undefined') {
-      throw new LibCacheError('set(): value should not be undefined.');
+      throw new UseCacheError('set(): value should not be undefined.');
     }
 
-    const res = await redis.set(
-      key,
-      isObject ? JSON.stringify(isObject) : `${value}`,
-      hasExpiryProvided ? 'EX' : undefined,
-      hasExpiryProvided ? expiry : undefined
-    );
+    checkRedis();
 
-    return res;
+    if (redis) {
+      const res = await redis.set(
+        key,
+        isObject ? JSON.stringify(isObject) : `${value}`,
+        hasExpiryProvided ? 'EX' : undefined,
+        hasExpiryProvided ? expiry : undefined
+      );
+
+      return res;
+    } else if (upstashRedis) {
+      const res = await upstashRedis.set(
+        key,
+        isObject ? JSON.stringify(isObject) : `${value}`,
+        hasExpiryProvided
+          ? {
+              ex: expiry,
+            }
+          : {}
+      );
+
+      return res;
+    } else {
+      throw new UseCacheError('Redis instance missing');
+    }
   } catch (err) {
     const errMessage = err?.message || '';
     return errMessage;
@@ -130,11 +168,10 @@ export const set = async <T>(params: ISetParams<T>): Promise<string | 'OK'> => {
  */
 export const init = (params: IAppInitParams): void => {
   store.redis = params.redis;
+  store.upstashRedis = params.upstashRedis;
   store.maxPaginatedItems = params.maxPaginatedItems;
 
-  if (!params?.redis) {
-    throw new LibCacheError('Redis instance is missing.');
-  }
+  checkRedis();
 };
 
 /**
@@ -151,7 +188,20 @@ export const getPaginatedListByPage = async (
   const end = start + (sizePerPage - 1);
   const items: { id: string; score: number }[] = [];
   const redis = store.redis;
-  const res = await redis.zrevrange(key, start, end, 'WITHSCORES');
+  const upstashRedis = store.upstashRedis;
+
+  let res: string[] = [];
+
+  checkRedis();
+
+  if (redis) {
+    res = await redis.zrevrange(key, start, end, 'WITHSCORES');
+  } else if (upstashRedis) {
+    res = await upstashRedis.zrange<string[]>(key, start, end, {
+      withScores: true,
+      rev: true,
+    });
+  }
 
   if (res?.length) {
     for (let i = 0; i < res.length; i += 2) {
@@ -186,9 +236,19 @@ export const getPaginatedListTotalItems = async (
   key: string
 ): Promise<number> => {
   const redis = store.redis;
-  const count = await redis.zcard(key);
+  const upstashRedis = store.upstashRedis;
 
-  return count;
+  checkRedis();
+
+  if (redis) {
+    const count = await redis.zcard(key);
+
+    return count;
+  } else {
+    const count = await upstashRedis.zcard(key);
+
+    return count;
+  }
 };
 
 /**
@@ -203,21 +263,33 @@ export const insertToPaginatedList = async (
   const total = await getPaginatedListTotalItems(key); // get count
   const maxPaginatedItems = store.maxPaginatedItems;
   const redis = store.redis;
+  const upstashRedis = store.upstashRedis;
   const scoreToUse = typeof score !== 'number' ? Date.now() : score;
 
   if (score < 0) {
-    throw new LibCacheError('insertToPaginatedList(): Invalid score.');
+    throw new UseCacheError('insertToPaginatedList(): Invalid score.');
   }
+
+  checkRedis();
 
   // if number of items limit reached
   // evict least recently used data
-  if (total >= maxPaginatedItems) {
+  if (total >= maxPaginatedItems && redis) {
     await redis.zpopmin(key);
+  } else if (total >= maxPaginatedItems && upstashRedis) {
+    await upstashRedis.zpopmin(key);
   }
 
-  const response = await redis.zadd(key, scoreToUse, id);
+  if (redis) {
+    const response = await redis.zadd(key, scoreToUse, id);
+    if (response > 0) {
+      return 'OK';
+    }
+  }
 
-  if (response > 0) {
+  if (upstashRedis) {
+    await upstashRedis.zadd(key, { incr: true }, { score, member: id });
+
     return 'OK';
   }
 
@@ -235,14 +307,24 @@ export const removeItemFromPaginatedList = async (
   const { id, key } = params;
 
   if (!id) {
-    throw new LibCacheError('removeItemFromPaginatedList(): Invalid id.');
+    throw new UseCacheError('removeItemFromPaginatedList(): Invalid id.');
   }
 
   const redis = store.redis;
-  const response = await redis.zrem(key, id);
+  const upstashRedis = store.upstashRedis;
 
-  if (response > 0) {
-    return 'OK';
+  if (redis) {
+    const response = await redis.zrem(key, id);
+
+    if (response > 0) {
+      return 'OK';
+    }
+  } else if (upstashRedis) {
+    const response = await upstashRedis.zrem(key, id);
+
+    if (response > 0) {
+      return 'OK';
+    }
   }
 
   return 'Error';
@@ -259,13 +341,21 @@ export const updateItemScoreFromPaginatedList = async (
   const { score, id, key } = params;
 
   if (!id) {
-    throw new LibCacheError('updateItemScoreFromPaginatedList(): Invalid id.');
+    throw new UseCacheError('updateItemScoreFromPaginatedList(): Invalid id.');
   }
 
   const redis = store.redis;
-  const response = await redis.zadd(key, score, id);
+  const upstashRedis = store.upstashRedis;
 
-  if (response > 0) {
+  if (redis) {
+    const response = await redis.zadd(key, score, id);
+
+    if (response > 0) {
+      return 'OK';
+    }
+  } else if (upstashRedis) {
+    await upstashRedis.zadd(key, { incr: true }, { score, member: id });
+
     return 'OK';
   }
 
