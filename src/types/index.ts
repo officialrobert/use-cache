@@ -26,7 +26,7 @@ export interface ISetParams<T> {
 }
 
 export interface IAppInitParams {
-  maxPaginatedItems: number;
+  maxPaginatedItems?: number;
   redis?: Redis;
   upstashRedis?: UpstashRedis;
   verbose?: boolean;
