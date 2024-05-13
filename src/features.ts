@@ -26,14 +26,14 @@ export const getOrRefresh = async <T>(
   const redis = store.redis;
   const upstashRedis = store.upstashRedis;
 
-  checkRedis();
-
   let res: string | null | undefined = '';
 
   if (redis) {
     res = await redis.get(key);
   } else if (upstashRedis) {
     res = await upstashRedis.get(key);
+  } else {
+    checkRedis();
   }
 
   if (
@@ -169,7 +169,10 @@ export const set = async <T>(params: ISetParams<T>): Promise<string | 'OK'> => {
 export const init = (params: IAppInitParams): void => {
   store.redis = params.redis;
   store.upstashRedis = params.upstashRedis;
-  store.maxPaginatedItems = params.maxPaginatedItems;
+
+  if (params?.maxPaginatedItems > 0) {
+    store.maxPaginatedItems = params.maxPaginatedItems;
+  }
 
   checkRedis();
 };
@@ -323,9 +326,7 @@ export const insertToPaginatedList = async (
     if (response > 0) {
       return 'OK';
     }
-  }
-
-  if (upstashRedis) {
+  } else if (upstashRedis) {
     await upstashRedis.zadd(key, { incr: true }, { score, member: id });
 
     return 'OK';
