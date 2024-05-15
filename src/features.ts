@@ -15,7 +15,11 @@ import {
 
 /**
  * Get latest cache data or force refresh before returning the value
- * @param params
+ * @param {Object} params
+ * @param {string} params.key - Data cache key
+ * @param {number} params.expiry - (optional) Expiry in seconds
+ * @param {boolean} params.forceRefresh - (optional) Force refresh
+ * @param {boolean} params.parseResult - (optional) Call JSON.parse on resulting data
  * @returns
  */
 export const getOrRefresh = async <T>(
@@ -81,8 +85,11 @@ export const getOrRefresh = async <T>(
 /**
  * Get latest cache data of 'key'.
  * Wraps the `getOrRefresh` function and enables you to update the score of an item in the list.
- * @param params
- * @returns {IGetOrRefreshReturnValue}
+ * @param {Object} params
+ * @param {string} listKey - Your list's cache key
+ * @param {number} score - (optional) Determines the new score of the cache data. Update LRU score.
+ * @param {boolean} updateScoreInPaginatedList - If set to true, thn apply new score.
+ * @returns {Object} IGetOrRefreshReturnValue
  */
 export const getOrRefreshDataInPaginatedList = async <T>(
   params: IGetOrRefreshDataInPaginatedListParams<T>
@@ -115,8 +122,11 @@ export const getOrRefreshDataInPaginatedList = async <T>(
 /**
  * Set redis cache.
  * Object data will be sanitzed with JSON.stringify()
- * @param params
- * @returns
+ * @param {Object} params
+ * @param {string} params.key - Data cache key
+ * @param value - Your data for the cache key
+ * @param {number} expiry - Expiry in seconds.
+ * @returns {string} 'OK' | 'Error'
  */
 export const set = async <T>(params: ISetParams<T>): Promise<string | 'OK'> => {
   try {
@@ -165,6 +175,9 @@ export const set = async <T>(params: ISetParams<T>): Promise<string | 'OK'> => {
 /**
  * Required initial function to run from the start of your app
  * @param params
+ * @param params.redis - Your ioredis instance
+ * @param params.upstashRedis - Your @upstash/redis instance
+ * @param params.maxPaginatedItems - Maximum number of paginated items before it starts evicting data.
  */
 export const init = (params: IAppInitParams): void => {
   store.redis = params.redis;
@@ -180,8 +193,11 @@ export const init = (params: IAppInitParams): void => {
 /**
  * Get paginated list by page.
  * Always in ascending order.
- * @param params
- * @returns
+ * @param {Object} params
+ * @param {string} params.key - Your list's cache key
+ * @param {number} params.page - Target page
+ * @param {number} params.sizePerPage - Total items in a single page
+ * @returns {Object} IGetPaginatedListByPageParams
  */
 export const getPaginatedListByPage = async (
   params: IGetPaginatedListByPageParams
@@ -232,7 +248,7 @@ export const getPaginatedListByPage = async (
 
 /**
  * Fetch total items in a list
- * @param key
+ * @param {string} key - Your list's cache key
  * @returns
  */
 export const getPaginatedListTotalItems = async (
@@ -257,8 +273,8 @@ export const getPaginatedListTotalItems = async (
 /**
  * Automatically insert ID data from your array of objects.
  * Use non-zero & non-negative scores.
- * @param listKey
- * @param listData
+ * @param {string} listKey - Your list's cache key
+ * @param {Array} listData - Your list data in array form.
  * @returns {string}
  */
 export const insertRecordsToPaginatedList = async <T>(
@@ -294,7 +310,10 @@ export const insertRecordsToPaginatedList = async <T>(
 /**
  * Insert an item to the list using the item ID.
  * Use non-zero & non-negative scores.
- * @param params
+ * @param {Object} params
+ * @param {string} params.key - Your list's cache key
+ * @param {string} params.id - Data id
+ * @param {number} params.score - (optional) Score order of the item in the paginated list, determining its placement.
  * @returns {string}
  */
 export const insertToPaginatedList = async (
@@ -337,8 +356,10 @@ export const insertToPaginatedList = async (
 
 /**
  * Remove item from the list.
- * @param params
- * @returns {string}
+ * @param {Object} params
+ * @param {string} params.key - Your list's cache key
+ * @param {string} params.id - Item ID
+ * @returns {string} 'OK' | 'Error'
  */
 export const removeItemFromPaginatedList = async (
   params: IRemoveItemFromPaginatedListParams
@@ -371,7 +392,10 @@ export const removeItemFromPaginatedList = async (
 
 /**
  * Update the score of an item in the paginated list to move it up or down in the order.
- * @param params
+ * @param {Object} params
+ * @param {string} params.key - Your list's cache key
+ * @param {string} params.id - Item ID*
+ * @param {number} params.score - Score order of the item in the paginated list, determining its placement.
  * @returns
  */
 export const updateItemScoreFromPaginatedList = async (
