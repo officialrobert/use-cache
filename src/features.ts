@@ -88,7 +88,7 @@ export const getOrRefresh = async <T>(
  * @param {Object} params
  * @param {string} listKey - Your list's cache key
  * @param {number} score - (optional) Determines the new score of the cache data. Update LRU score.
- * @param {boolean} updateScoreInPaginatedList - If set to true, thn apply new score.
+ * @param {boolean} updateScoreInPaginatedList - (optional) If set to true, thn apply new score.
  * @returns {Object} IGetOrRefreshReturnValue
  */
 export const getOrRefreshDataInPaginatedList = async <T>(
@@ -125,7 +125,7 @@ export const getOrRefreshDataInPaginatedList = async <T>(
  * @param {Object} params
  * @param {string} params.key - Data cache key
  * @param value - Your data for the cache key
- * @param {number} expiry - Expiry in seconds.
+ * @param {number} expiry - (optional) Expiry in seconds. No expiry set by default.
  * @returns {string} 'OK' | 'Error'
  */
 export const set = async <T>(params: ISetParams<T>): Promise<string | 'OK'> => {
@@ -175,9 +175,9 @@ export const set = async <T>(params: ISetParams<T>): Promise<string | 'OK'> => {
 /**
  * Required initial function to run from the start of your app
  * @param params
- * @param params.redis - Your ioredis instance
- * @param params.upstashRedis - Your @upstash/redis instance
- * @param params.maxPaginatedItems - Maximum number of paginated items before it starts evicting data.
+ * @param {Object} params.redis - (optional) Your ioredis instance
+ * @param {Object} params.upstashRedis - (optional) Your @upstash/redis instance
+ * @param {number} params.maxPaginatedItems - (optional) Maximum number of paginated items before it starts evicting data.
  */
 export const init = (params: IAppInitParams): void => {
   store.redis = params.redis;
