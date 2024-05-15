@@ -9,13 +9,15 @@ export interface IGetOrRefreshParams<T> {
   cacheRefreshHandler?: () => Promise<T>;
 }
 
-export interface IGetOrRefreshDataInPaginatedListParams<T>
-  extends IGetOrRefreshParams<T> {
-  // if item is part of paginated list
-  listKey: string;
-  score?: number;
-  updateScoreInPaginatedList?: number;
-}
+export type IGetOrRefreshDataInPaginatedListParams<T> =
+  IGetOrRefreshParams<T> & {
+    // if item is part of paginated list
+    id: string;
+    key?: string;
+    listKey: string;
+    score?: number;
+    updateScoreInPaginatedList?: number;
+  };
 
 export type IGetOrRefreshReturnValue<T> = Promise<T | undefined>;
 

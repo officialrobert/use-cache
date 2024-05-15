@@ -20,6 +20,7 @@ import {
  * @param {number} params.expiry - (optional) Expiry in seconds
  * @param {boolean} params.forceRefresh - (optional) Force refresh
  * @param {boolean} params.parseResult - (optional) Call JSON.parse on resulting data
+ * @param {function} params.cacheRefreshHandler - (optional) Refresh function
  * @returns
  */
 export const getOrRefresh = async <T>(
@@ -85,18 +86,31 @@ export const getOrRefresh = async <T>(
 /**
  * Get latest cache data of 'key'.
  * Wraps the `getOrRefresh` function and enables you to update the score of an item in the list.
- * @param {Object} params
- * @param {string} listKey - Your list's cache key
- * @param {number} score - (optional) Determines the new score of the cache data. Update LRU score.
- * @param {boolean} updateScoreInPaginatedList - (optional) If set to true, thn apply new score.
+ * @param {Object}   params
+ * @param {string}   params.listKey - Your list's cache key
+ * @param {string}   params.id - Item ID
+ * @param {string}   params.key - (optional) Data cache key
+ * @param {number}   params.expiry - (optional) Expiry in seconds
+ * @param {boolean}  params.forceRefresh - (optional) Force refresh
+ * @param {boolean}  params.parseResult - (optional) Call JSON.parse on resulting data
+ * @param {number}   params.score - (optional) Determines the new score of the cache data. Update LRU score.
+ * @param {boolean}  params.updateScoreInPaginatedList - (optional) If set to true, thn apply new score.
+ * @param {function} params.cacheRefreshHandler - (optional) Refresh function
  * @returns {Object} IGetOrRefreshReturnValue
  */
 export const getOrRefreshDataInPaginatedList = async <T>(
   params: IGetOrRefreshDataInPaginatedListParams<T>
 ): IGetOrRefreshReturnValue<T> => {
-  const { updateScoreInPaginatedList, score, listKey } = params;
-  const val = await getOrRefresh(params);
-  const id = val && val['id'];
+  const {
+    updateScoreInPaginatedList,
+    score,
+    listKey,
+    key,
+    id: itemId,
+  } = params;
+  const cacheKey = !key ? `${listKey}:id:${itemId}` : key;
+  const val = await getOrRefresh({ ...params, key: cacheKey });
+  const id = itemId ? itemId : val && val['id'];
 
   if (
     typeof val !== 'undefined' &&
