@@ -45,8 +45,11 @@ declare module 'use-cache-helper' {
     filters: Record<string, any>
   ): string;
 
-  export function insertRecordsToPaginatedList<T>(
-    listKey: string,
-    listData: T & { score: number; id: string }[]
-  ): Promise<string | 'OK' | 'Error'>;
+  export function insertRecordsToPaginatedList<T>(params: {
+    listKey: string;
+    listData: T & { score: number; id: string }[];
+    cacheDataPrefix?: string;
+    cachePayload?: boolean;
+    cachePayloadExpiry?: number;
+  }): Promise<string | 'OK' | 'Error'>;
 }

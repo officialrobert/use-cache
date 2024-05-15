@@ -273,15 +273,30 @@ export const getPaginatedListTotalItems = async (
 /**
  * Automatically insert ID data from your array of objects.
  * Use non-zero & non-negative scores.
- * @param {string} listKey - Your list's cache key
- * @param {Array} listData - Your list data in array form.
- * @returns {string}
+ * Each payload will be cac
+ * @param {Object}  params
+ * @param {string}  params.listKey - Your list's cache key
+ * @param {Array}   params.listData - Your list data in array form.
+ * @param {string}  params.cacheDataPrefix - Prefix cache to your data. Example: `users:${id}`
+ * @param {boolean} params.cachePayload - If set to true, each payload in the list will be cached.
+ * @returns {string} - 'OK' | 'Error'
  */
-export const insertRecordsToPaginatedList = async <T>(
-  listKey: string,
-  listData: T & { score: number; id: string }[]
-): Promise<string | 'OK'> => {
+export const insertRecordsToPaginatedList = async <T>(params: {
+  listKey: string;
+  listData: T & { score: number; id: string }[];
+  cacheDataPrefix?: string;
+  cachePayload?: boolean;
+  cachePayloadExpiry?: number;
+}): Promise<string | 'OK'> => {
   checkRedis();
+
+  const {
+    listData,
+    listKey,
+    cacheDataPrefix,
+    cachePayload,
+    cachePayloadExpiry,
+  } = params;
 
   if (listData?.length > 0) {
     const invalidScores = listData.filter((d) => d.score < 1);
@@ -299,6 +314,19 @@ export const insertRecordsToPaginatedList = async <T>(
         id,
         key: listKey,
       });
+
+      if (cachePayload) {
+        await set({
+          key: `${
+            typeof cacheDataPrefix === 'string' && !!cacheDataPrefix
+              ? cacheDataPrefix
+              : `${listKey}:id:`
+          }${id}`,
+          value: payload,
+          ...(typeof cachePayloadExpiry === 'number' &&
+            cachePayloadExpiry > 0 && { expiry: cachePayloadExpiry }),
+        });
+      }
     }
 
     return 'OK';
