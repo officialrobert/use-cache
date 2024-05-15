@@ -79,7 +79,10 @@ This library uses `Redis Sorted Sets` to implement a paginated list. We store on
 > Here's how to cache a list based on your SQL query:
 
 ```ts
-import { insertToPaginatedList, generateKeyFromQueryFilters } from 'use-cache-helper';
+import {
+  insertToPaginatedList,
+  generateKeyFromQueryFilters,
+} from 'use-cache-helper';
 import { supabaseClient } from 'lib';
 import { map, filter } from 'lodash';
 
@@ -119,6 +122,26 @@ const storeListByPageHandler = async (page: number, sizePerPage: number) => {
 };
 ```
 
+### insertRecordsToPaginatedList
+
+<a id="insertRecordsToPaginatedList"></a>
+
+Insert an array of objects containing data into a paginated list. This function also allows you to cache each payload with the appropriate parameters.
+
+```ts
+insertRecordsToPaginatedList(options);
+```
+
+### insertRecordsToPaginatedList() options
+
+<a id="insertRecordsToPaginatedList_options"></a>
+
+- `listKey <string>` - Your cache key for your paginated list.
+- `listData <array>` - Your list data in array form.
+- `cacheDataPrefix <string>` - Prefix cache to your data. Example: `users:${id}`
+- `cachePayload <boolean>` - If set to true, each payload in the list will be cached
+- `cachePayloadExpiry <number>` - Expiry for each payload cache, unit in seconds
+
 ### generateKeyFromQueryFilters
 
 <a id="generateKeyFromQueryFilters"></a>
@@ -129,7 +152,9 @@ Generate a string key for your cache based on the formatted filter properties of
 generateKeyFromQueryFilters(filters);
 ```
 
-### generateKeyFromQueryFilters()
+### generateKeyFromQueryFilters() filters
+
+<a id="generateKeyFromQueryFilters_filters"></a>
 
 ```ts
 // {"limit" : 1 , "team" : "team-id" } => "limit1Teamteamid"

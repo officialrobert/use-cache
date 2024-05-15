@@ -293,6 +293,7 @@ export const getPaginatedListTotalItems = async (
  * @param {Array}   params.listData - Your list data in array form.
  * @param {string}  params.cacheDataPrefix - Prefix cache to your data. Example: `users:${id}`
  * @param {boolean} params.cachePayload - If set to true, each payload in the list will be cached.
+ * @param {number}  params.cachePayloadExpiry - Expiry for each payload cache, unit in seconds.
  * @returns {string} - 'OK' | 'Error'
  */
 export const insertRecordsToPaginatedList = async <T>(params: {
