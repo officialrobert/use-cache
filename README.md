@@ -112,6 +112,30 @@ const handleInsertItem = async (id: string) => {
 };
 ```
 
+## Insert array of records
+
+```ts
+import { insertRecordsToPaginatedList } from 'use-cache-helper';
+
+const list = [
+  {
+    id: 'id-xxx-1',
+    score: 1,
+  },
+  {
+    id: 'id-xxx-2',
+    score: 2,
+  },
+];
+
+await insertRecordsToPaginatedList({
+  listKey: `listCacheKey`,
+  listData: list,
+  cachePayload: true, // cache each record using the id
+  cachePayloadExpiry: 3_600, // payload cache expiry in seconds
+});
+```
+
 ## Documentation
 
 See full API reference <a href="./docs/README.md"><b>Documentation</b></a>

@@ -138,7 +138,7 @@ export const getOrRefreshDataInPaginatedList = async <T>(
  * Object data will be sanitzed with JSON.stringify()
  * @param {Object} params
  * @param {string} params.key - Data cache key
- * @param value - Your data for the cache key
+ * @param {string | number | Object} params.value - Your data for the cache key
  * @param {number} expiry - (optional) Expiry in seconds. No expiry set by default.
  * @returns {string} 'OK' | 'Error'
  */
@@ -156,10 +156,12 @@ export const set = async <T>(params: ISetParams<T>): Promise<string | 'OK'> => {
 
     checkRedis();
 
+    const valueToCache = isObject ? JSON.stringify(value) : `${value}`;
+
     if (redis) {
       const res = await redis.set(
         key,
-        isObject ? JSON.stringify(isObject) : `${value}`,
+        valueToCache,
         hasExpiryProvided ? 'EX' : undefined,
         hasExpiryProvided ? expiry : undefined
       );
@@ -168,7 +170,7 @@ export const set = async <T>(params: ISetParams<T>): Promise<string | 'OK'> => {
     } else if (upstashRedis) {
       const res = await upstashRedis.set(
         key,
-        isObject ? JSON.stringify(isObject) : `${value}`,
+        valueToCache,
         hasExpiryProvided
           ? {
               ex: expiry,
