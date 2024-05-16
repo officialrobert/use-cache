@@ -114,6 +114,8 @@ const handleInsertItem = async (id: string) => {
 
 ## Insert array of records
 
+Don't worry about duplicates as long as you're using ID values that are unique.
+
 ```ts
 import { insertRecordsToPaginatedList } from 'use-cache-helper';
 
@@ -121,10 +123,12 @@ const list = [
   {
     id: 'id-xxx-1',
     score: 1,
+    // .. more data
   },
   {
     id: 'id-xxx-2',
     score: 2,
+    // .. more data
   },
 ];
 
