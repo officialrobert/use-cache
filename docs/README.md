@@ -19,6 +19,7 @@ init(options);
 <a id="options"></a>
 
 - `redis <Redis>`: Your [**ioredis**](https://www.npmjs.com/package/ioredis) instance is the Redis instance that will be used for caching data.
+- `upstashRedis <Redis>` - Your [**Upstash redis**](https://www.npmjs.com/package/@upstash/redis) instance is the Redis instance that will be used for caching data.
 - `maxPaginatedItems <number>`: The total number of items in the paginated list before we begin data eviction.
 
 ### getOrRefresh

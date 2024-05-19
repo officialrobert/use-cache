@@ -18,6 +18,14 @@ init({ redis: redis });
 init({ redis: redis, maxPaginatedItems: 200 });
 ```
 
+> Upstash redis
+
+```ts
+init({
+  upstashRedis: redis,
+});
+```
+
 ## Getter function
 
 Use `getOrRefresh` with `SupabaseDB`
