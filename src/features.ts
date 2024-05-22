@@ -301,9 +301,7 @@ export const getPaginatedListTotalItems = async (
  * @param {number}  params.cachePayloadExpiry - Expiry for each payload cache, unit in seconds.
  * @returns {string} - 'OK' | 'Error'
  */
-export const insertRecordsToPaginatedList = async <
-  T extends { score: number; id: string }
->(params: {
+export const insertRecordsToPaginatedList = async <T>(params: {
   listKey: string;
   listData: T & { score: number; id: string }[];
   cacheDataPrefix?: string;
