@@ -13,10 +13,10 @@ export type IGetOrRefreshDataInPaginatedListParams<T> =
   IGetOrRefreshParams<T> & {
     // if item is part of paginated list
     id: string;
-    key?: string;
     listKey: string;
-    score?: number;
     updateScoreInPaginatedList?: number;
+    key?: string;
+    score?: number;
   };
 
 export type IGetOrRefreshReturnValue<T> = Promise<T | undefined>;
@@ -44,6 +44,7 @@ export interface IGetPaginatedListByPageParams {
   key: string;
   page: number;
   sizePerPage: number;
+  ascendingOrder?: boolean;
 }
 
 export interface IInsertPaginatedListItemParams {

@@ -199,6 +199,7 @@ getPaginatedListByPage(options);
 - `key <string>` - Your cache key for your paginated list.
 - `page <number>` - The target page you want to fetch.
 - `sizePerPage <number>` - The total items per page.
+- `ascendingOrder <boolean>` - (optional) Fetch list in ascending order.
 
 ### insertToPaginatedList
 

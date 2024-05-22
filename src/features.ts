@@ -209,16 +209,17 @@ export const init = (params: IAppInitParams): void => {
 /**
  * Get paginated list by page.
  * Always in ascending order.
- * @param {Object} params
- * @param {string} params.key - Your list's cache key
- * @param {number} params.page - Target page
- * @param {number} params.sizePerPage - Total items in a single page
+ * @param   {Object}   params
+ * @param   {string}   params.key - Your list's cache key
+ * @param   {number}   params.page - Target page
+ * @param   {number}   params.sizePerPage - Total items in a single page
+ * @param   {boolean}  params.ascendingOrder - (optional) Fetch list in ascending order. High to low by default.
  * @returns {Object} IGetPaginatedListByPageParams
  */
 export const getPaginatedListByPage = async (
   params: IGetPaginatedListByPageParams
 ): Promise<string[]> => {
-  const { page, sizePerPage, key } = params;
+  const { page, sizePerPage, key, ascendingOrder = false } = params;
   const start = (page - 1) * sizePerPage;
   const end = start + (sizePerPage - 1);
   const items: { id: string; score: number }[] = [];
@@ -229,12 +230,14 @@ export const getPaginatedListByPage = async (
 
   checkRedis();
 
-  if (redis) {
+  if (redis && !ascendingOrder) {
     res = await redis.zrevrange(key, start, end, 'WITHSCORES');
+  } else if (redis) {
+    res = await redis.zrange(key, start, end, 'WITHSCORES');
   } else if (upstashRedis) {
     res = await upstashRedis.zrange<string[]>(key, start, end, {
       withScores: true,
-      rev: true,
+      rev: !ascendingOrder,
     });
   }
 
@@ -298,7 +301,9 @@ export const getPaginatedListTotalItems = async (
  * @param {number}  params.cachePayloadExpiry - Expiry for each payload cache, unit in seconds.
  * @returns {string} - 'OK' | 'Error'
  */
-export const insertRecordsToPaginatedList = async <T>(params: {
+export const insertRecordsToPaginatedList = async <
+  T extends { score: number; id: string }
+>(params: {
   listKey: string;
   listData: T & { score: number; id: string }[];
   cacheDataPrefix?: string;
