@@ -45,6 +45,11 @@ declare module 'use-cache-helper' {
     filters: Record<string, any>
   ): string;
 
+  export function getDefaulItemCacheKeyForPaginatedList(
+    listKey: string,
+    itemId: string
+  ): string;
+
   export function insertRecordsToPaginatedList<T>(params: {
     listKey: string;
     listData: T & { score: number; id: string }[];
