@@ -10,5 +10,6 @@ export {
   updateItemScoreFromPaginatedList,
   generateKeyFromQueryFilters,
   insertRecordsToPaginatedList,
+  getDefaulItemCacheKeyForPaginatedList,
 } from './features';
 export * from './types/index';
