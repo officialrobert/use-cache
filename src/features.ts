@@ -84,18 +84,31 @@ export const getOrRefresh = async <T>(
 };
 
 /**
+ * Retrieve the formatted default cache key for an item in a paginated list.
+ * @param   {string} listKey - Your list's cache key
+ * @param   {string} itemId  - Your item id
+ * @returns {string}
+ */
+export const getDefaulItemCacheKeyForPaginatedList = (
+  listKey: string,
+  itemId: string
+): string => {
+  return `${listKey}:id:${itemId}`;
+};
+
+/**
  * Get latest cache data of 'key'.
  * Wraps the `getOrRefresh` function and enables you to update the score of an item in the list.
- * @param {Object}   params
- * @param {string}   params.listKey - Your list's cache key
- * @param {string}   params.id - Item ID
- * @param {string}   params.key - (optional) Data cache key
- * @param {number}   params.expiry - (optional) Expiry in seconds
- * @param {boolean}  params.forceRefresh - (optional) Force refresh
- * @param {boolean}  params.parseResult - (optional) Call JSON.parse on resulting data
- * @param {number}   params.score - (optional) Determines the new score of the cache data. Update LRU score.
- * @param {boolean}  params.updateScoreInPaginatedList - (optional) If set to true, thn apply new score.
- * @param {function} params.cacheRefreshHandler - (optional) Refresh function
+ * @param   {Object}   params
+ * @param   {string}   params.listKey - Your list's cache key
+ * @param   {string}   params.id - Item ID
+ * @param   {string}   params.key - (optional) Data cache key
+ * @param   {number}   params.expiry - (optional) Expiry in seconds
+ * @param   {boolean}  params.forceRefresh - (optional) Force refresh
+ * @param   {boolean}  params.parseResult - (optional) Call JSON.parse on resulting data
+ * @param   {number}   params.score - (optional) Determines the new score of the cache data. Update LRU score.
+ * @param   {boolean}  params.updateScoreInPaginatedList - (optional) If set to true, thn apply new score.
+ * @param   {function} params.cacheRefreshHandler - (optional) Refresh function
  * @returns {Object} IGetOrRefreshReturnValue
  */
 export const getOrRefreshDataInPaginatedList = async <T>(
@@ -108,7 +121,9 @@ export const getOrRefreshDataInPaginatedList = async <T>(
     key,
     id: itemId,
   } = params;
-  const cacheKey = !key ? `${listKey}:id:${itemId}` : key;
+  const cacheKey = !key
+    ? getDefaulItemCacheKeyForPaginatedList(listKey, itemId)
+    : key;
   const val = await getOrRefresh({ ...params, key: cacheKey });
   const id = itemId ? itemId : val && val['id'];
 
@@ -293,12 +308,12 @@ export const getPaginatedListTotalItems = async (
  * Automatically insert ID data from your array of objects.
  * Use non-zero & non-negative scores.
  * Each payload will be cac
- * @param {Object}  params
- * @param {string}  params.listKey - Your list's cache key
- * @param {Array}   params.listData - Your list data in array form.
- * @param {string}  params.cacheDataPrefix - Prefix cache to your data. Example: `users:${id}`
- * @param {boolean} params.cachePayload - If set to true, each payload in the list will be cached.
- * @param {number}  params.cachePayloadExpiry - Expiry for each payload cache, unit in seconds.
+ * @param   {Object}  params
+ * @param   {string}  params.listKey - Your list's cache key
+ * @param   {Array}   params.listData - Your list data in array form.
+ * @param   {string}  params.cacheDataPrefix - Prefix cache to your data. Example: `users:${id}`
+ * @param   {boolean} params.cachePayload - If set to true, each payload in the list will be cached.
+ * @param   {number}  params.cachePayloadExpiry - Expiry for each payload cache, unit in seconds.
  * @returns {string} - 'OK' | 'Error'
  */
 export const insertRecordsToPaginatedList = async <T>(params: {
@@ -340,7 +355,7 @@ export const insertRecordsToPaginatedList = async <T>(params: {
           key: `${
             typeof cacheDataPrefix === 'string' && !!cacheDataPrefix
               ? cacheDataPrefix
-              : `${listKey}:id:`
+              : getDefaulItemCacheKeyForPaginatedList(listKey, id)
           }${id}`,
           value: payload,
           ...(typeof cachePayloadExpiry === 'number' &&
