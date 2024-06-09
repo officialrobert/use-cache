@@ -76,6 +76,10 @@ export const getOrRefresh = async <T>(
     return undefined;
   }
 
+  if (parseResult && res === null) {
+    return null;
+  }
+
   if (parseResult && res && typeof res === 'string') {
     return JSON.parse(res) as T;
   }
@@ -514,4 +518,30 @@ export const generateKeyFromQueryFilters = (
   }
 
   return '';
+};
+
+/**
+ * Hard delete paginated list and items
+ * @param   {string} listKey
+ * @returns {string | number} Status from upstash redis or ioredis
+ */
+export const deletePaginatedList = async (
+  listKey: string
+): Promise<string | number> => {
+  const redis = store.redis;
+  const upstashRedis = store.upstashRedis;
+
+  if (redis) {
+    const res = await upstashRedis.del(listKey);
+
+    return res;
+  } else if (upstashRedis) {
+    const res = await upstashRedis.del(listKey);
+
+    return res;
+  } else {
+    checkRedis();
+
+    return 'Error';
+  }
 };

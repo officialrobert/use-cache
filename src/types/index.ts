@@ -19,7 +19,7 @@ export type IGetOrRefreshDataInPaginatedListParams<T> =
     score?: number;
   };
 
-export type IGetOrRefreshReturnValue<T> = Promise<T | undefined>;
+export type IGetOrRefreshReturnValue<T> = Promise<T | undefined | null>;
 
 export interface ISetParams<T> {
   key: string;

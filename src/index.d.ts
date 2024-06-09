@@ -57,4 +57,8 @@ declare module 'use-cache-helper' {
     cachePayload?: boolean;
     cachePayloadExpiry?: number;
   }): Promise<string | 'OK' | 'Error'>;
+
+  export function deletePaginatedList(
+    listKey: string
+  ): Promise<string | number>;
 }

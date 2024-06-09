@@ -11,5 +11,6 @@ export {
   generateKeyFromQueryFilters,
   insertRecordsToPaginatedList,
   getDefaulItemCacheKeyForPaginatedList,
+  deletePaginatedList,
 } from './features';
 export * from './types/index';
