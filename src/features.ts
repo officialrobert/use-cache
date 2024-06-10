@@ -356,11 +356,10 @@ export const insertRecordsToPaginatedList = async <T>(params: {
 
       if (cachePayload) {
         await set({
-          key: `${
+          key:
             typeof cacheDataPrefix === 'string' && !!cacheDataPrefix
-              ? cacheDataPrefix
-              : getDefaulItemCacheKeyForPaginatedList(listKey, id)
-          }${id}`,
+              ? `${cacheDataPrefix}${id}`
+              : getDefaulItemCacheKeyForPaginatedList(listKey, id),
           value: payload,
           ...(typeof cachePayloadExpiry === 'number' &&
             cachePayloadExpiry > 0 && { expiry: cachePayloadExpiry }),
