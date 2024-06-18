@@ -41,25 +41,25 @@ export interface IAppStoreRef {
 }
 
 export interface IGetPaginatedListByPageParams {
-  key: string;
+  listKey: string;
   page: number;
   sizePerPage: number;
   ascendingOrder?: boolean;
 }
 
 export interface IInsertPaginatedListItemParams {
-  key: string;
+  listKey: string;
   id: string;
   score?: number;
 }
 
 export interface IRemoveItemFromPaginatedListParams {
-  key: string;
+  listKey: string;
   id: string;
 }
 
 export interface IUpdateItemScoreFromPaginatedList {
-  key: string;
+  listKey: string;
   id: string;
   score: number;
 }

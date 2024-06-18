@@ -2,6 +2,12 @@
 
 `use-cache-helper` provides helper functions to easily manage and scale your redis and database caching strategies.
 
+## Install
+
+```
+npm i use-cache-helper
+```
+
 ## Initialize
 
 ```ts
