@@ -47,8 +47,14 @@ export const getOrRefresh = async <T>(
     typeof cacheRefreshHandler === 'function'
   ) {
     const val = await cacheRefreshHandler();
+
+    if (typeof val === 'undefined') {
+      return undefined;
+    }
+
     const hasExpiryProvided = typeof expiry === 'number' && expiry > 0;
-    const sanitized = typeof val === 'object' ? JSON.stringify(val) : `${val}`;
+    const sanitized =
+      val && typeof val === 'object' ? JSON.stringify(val) : `${val || ''}`;
 
     if (redis) {
       await redis.set(
