@@ -282,8 +282,16 @@ export const getPaginatedListByPage = async (
   return items
     .filter((item) => !!item && item?.id?.length > 0)
     .sort((a, b) => {
-      const scoreA = a.score ?? -Infinity;
-      const scoreB = b.score ?? -Infinity;
+      const scoreA = ascendingOrder
+        ? a.score ?? Infinity
+        : a.score ?? -Infinity;
+      const scoreB = ascendingOrder
+        ? b.score ?? Infinity
+        : b.score ?? -Infinity;
+
+      if (ascendingOrder) {
+        return scoreA - scoreB;
+      }
 
       return scoreB - scoreA;
     })

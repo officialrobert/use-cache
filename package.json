@@ -1,6 +1,6 @@
 {
   "name": "use-cache-helper",
-  "version": "0.2408.3001",
+  "version": "0.2409.1801",
   "description": "use-cache-helper provides helper functions to easily manage and scale your redis and database caching strategies.",
   "main": "dist/index.js",
   "private": false,
