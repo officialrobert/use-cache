@@ -352,9 +352,9 @@ export const insertRecordsToPaginatedList = async <T>(params: {
   } = params;
 
   if (listData?.length > 0) {
-    const invalidScores = listData.filter((d) => d.score < 1);
+    const invalidScores = listData.filter((d) => typeof d?.score !== 'number');
 
-    if (invalidScores?.length > 0) {
+    if (invalidScores?.length > 0 || invalidScores?.length) {
       throw new UseCacheError('insertRecordsToPaginatedList() invalid score');
     }
 
@@ -406,10 +406,6 @@ export const insertToPaginatedList = async (
   const upstashRedis = store.upstashRedis;
   const scoreToUse = typeof score !== 'number' ? Date.now() : score;
 
-  if (score < 0) {
-    throw new UseCacheError('insertToPaginatedList(): Invalid score.');
-  }
-
   checkRedis();
 
   // if number of items limit reached
@@ -426,7 +422,11 @@ export const insertToPaginatedList = async (
       return 'OK';
     }
   } else if (upstashRedis) {
-    await upstashRedis.zadd(key, { incr: true }, { score, member: id });
+    await upstashRedis.zadd(
+      key,
+      { incr: true },
+      { score: scoreToUse, member: id }
+    );
 
     return 'OK';
   }
